@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2017 TrinityCore <http://www.trinitycore.org/>
+ * Copyright (C) 2008-2018 TrinityCore <https://www.trinitycore.org/>
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -16,23 +16,23 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Common.h"
-#include "WorldPacket.h"
 #include "WorldSession.h"
-#include "Opcodes.h"
-#include "Log.h"
-#include "Corpse.h"
-#include "Player.h"
-#include "Garrison.h"
-#include "MapManager.h"
-#include "Transport.h"
 #include "Battleground.h"
-#include "WaypointMovementGenerator.h"
-#include "InstanceSaveMgr.h"
-#include "ObjectMgr.h"
-#include "Vehicle.h"
+#include "Common.h"
+#include "Corpse.h"
+#include "Garrison.h"
 #include "InstancePackets.h"
+#include "InstanceSaveMgr.h"
+#include "Log.h"
+#include "MapManager.h"
 #include "MovementPackets.h"
+#include "ObjectMgr.h"
+#include "Opcodes.h"
+#include "Player.h"
+#include "SpellInfo.h"
+#include "Transport.h"
+#include "Vehicle.h"
+#include "WaypointMovementGenerator.h"
 
 #define MOVEMENT_PACKET_TIME_DELAY 0
 

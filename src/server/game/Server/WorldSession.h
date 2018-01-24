@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2017 TrinityCore <http://www.trinitycore.org/>
+ * Copyright (C) 2008-2018 TrinityCore <https://www.trinitycore.org/>
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -355,7 +355,7 @@ namespace WorldPackets
     namespace Hotfix
     {
         class DBQueryBulk;
-        class HotfixQuery;
+        class HotfixRequest;
     }
 
     namespace Inspect
@@ -596,6 +596,7 @@ namespace WorldPackets
         class QuestPushResult;
         class PushQuestToParty;
         class RequestWorldQuestUpdate;
+        class ChoiceResponse;
     }
 
     namespace RaF
@@ -911,7 +912,7 @@ class TC_GAME_API WorldSession
 
         void SendAuthResponse(uint32 code, bool queued, uint32 queuePos = 0);
         void SendClientCacheVersion(uint32 version);
-        void SendHotfixList(int32 version);
+        void SendAvailableHotfixes(int32 version);
 
         void InitializeSession();
         void InitializeSessionCallback(SQLQueryHolder* realmHolder, SQLQueryHolder* holder);
@@ -1221,7 +1222,7 @@ class TC_GAME_API WorldSession
         void HandleGameObjectQueryOpcode(WorldPackets::Query::QueryGameObject& packet);
 
         void HandleDBQueryBulk(WorldPackets::Hotfix::DBQueryBulk& dbQuery);
-        void HandleHotfixQuery(WorldPackets::Hotfix::HotfixQuery& hotfixQuery);
+        void HandleHotfixRequest(WorldPackets::Hotfix::HotfixRequest& hotfixQuery);
 
         void HandleMoveWorldportAckOpcode(WorldPackets::Movement::WorldPortResponse& packet);
         void HandleMoveWorldportAck();                // for server-side calls
@@ -1442,6 +1443,7 @@ class TC_GAME_API WorldSession
         void HandlePushQuestToParty(WorldPackets::Quest::PushQuestToParty& packet);
         void HandleQuestPushResult(WorldPackets::Quest::QuestPushResult& packet);
         void HandleRequestWorldQuestUpdate(WorldPackets::Quest::RequestWorldQuestUpdate& packet);
+        void HandlePlayerChoiceResponse(WorldPackets::Quest::ChoiceResponse& choiceResponse);
 
         void HandleChatMessageOpcode(WorldPackets::Chat::ChatMessage& chatMessage);
         void HandleChatMessageWhisperOpcode(WorldPackets::Chat::ChatMessageWhisper& chatMessageWhisper);

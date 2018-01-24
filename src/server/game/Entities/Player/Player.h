@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2017 TrinityCore <http://www.trinitycore.org/>
+ * Copyright (C) 2008-2018 TrinityCore <https://www.trinitycore.org/>
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -111,7 +111,7 @@ enum SkillFieldOffset
     SKILL_PERM_BONUS_OFFSET = SKILL_TEMP_BONUS_OFFSET + 64
 };
 
-#define PLAYER_EXPLORED_ZONES_SIZE  256
+#define PLAYER_EXPLORED_ZONES_SIZE  320
 
 // Note: SPELLMOD_* values is aura types in fact
 enum SpellModType : uint8
@@ -468,7 +468,7 @@ enum PlayerFieldBytesOffsets
     PLAYER_FIELD_BYTES_OFFSET_RAF_GRANTABLE_LEVEL       = 0,
     PLAYER_FIELD_BYTES_OFFSET_ACTION_BAR_TOGGLES        = 1,
     PLAYER_FIELD_BYTES_OFFSET_LIFETIME_MAX_PVP_RANK     = 2,
-    PLAYER_FIELD_BYTES_OFFSET_MAX_ARTIFACT_POWER_RANKS  = 3,
+    PLAYER_FIELD_BYTES_OFFSET_NUM_RESPECS               = 3,
 };
 
 enum PlayerFieldBytes2Offsets
@@ -1290,6 +1290,7 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         bool _StoreOrEquipNewItem(uint32 vendorslot, uint32 item, uint8 count, uint8 bag, uint8 slot, int64 price, ItemTemplate const* pProto, Creature* pVendor, VendorItem const* crItem, bool bStore);
 
         float GetReputationPriceDiscount(Creature const* creature) const;
+        float GetReputationPriceDiscount(FactionTemplateEntry const* factionTemplate) const;
 
         Player* GetTrader() const;
         TradeData* GetTradeData() const { return m_trade; }
@@ -1357,6 +1358,7 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         uint32 GetQuestMoneyReward(Quest const* quest) const;
         uint32 GetQuestXPReward(Quest const* quest);
         bool CanSelectQuestPackageItem(QuestPackageItemEntry const* questPackageItem) const;
+        void RewardQuestPackage(uint32 questPackageId, uint32 onlyItemId = 0);
         void RewardQuest(Quest const* quest, uint32 reward, Object* questGiver, bool announce = true);
         void SetRewardedQuest(uint32 quest_id);
         void FailQuest(uint32 quest_id);
@@ -1808,10 +1810,6 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         void ApplyManaRegenBonus(int32 amount, bool apply);
         void ApplyHealthRegenBonus(int32 amount, bool apply);
         void UpdateManaRegen();
-        uint32 GetRuneTimer(uint8 index) const { return m_runeGraceCooldown[index]; }
-        void SetRuneTimer(uint8 index, uint32 timer) { m_runeGraceCooldown[index] = timer; }
-        uint32 GetLastRuneGraceTimer(uint8 index) const { return m_lastRuneGraceTimers[index]; }
-        void SetLastRuneGraceTimer(uint8 index, uint32 timer) { m_lastRuneGraceTimers[index] = timer; }
         void UpdateAllRunesRegen();
 
         ObjectGuid const& GetLootGUID() const { return GetGuidValue(PLAYER_LOOT_TARGET_GUID); }
@@ -2123,8 +2121,6 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         void SetFallInformation(uint32 time, float z);
         void HandleFall(MovementInfo const& movementInfo);
 
-        bool CanFlyInZone(uint32 mapid, uint32 zone) const;
-
         void SetClientControl(Unit* target, bool allowMove);
 
         void SetMover(Unit* target);
@@ -2269,10 +2265,10 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         bool isAllowedToLoot(const Creature* creature);
 
         DeclinedName const* GetDeclinedNames() const { return m_declinedname; }
-        uint8 GetRunesState() const { return m_runes->RuneState; }
+        uint8 GetRunesState() const;
         uint32 GetRuneCooldown(uint8 index) const { return m_runes->Cooldown[index]; }
         uint32 GetRuneBaseCooldown() const;
-        void SetRuneCooldown(uint8 index, uint32 cooldown, bool casted = false);
+        void SetRuneCooldown(uint8 index, uint32 cooldown);
         void ResyncRunes() const;
         void AddRunePower(uint8 index) const;
         void InitRunes();
@@ -2342,6 +2338,8 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
 
         SceneMgr& GetSceneMgr() { return m_sceneMgr; }
         RestMgr& GetRestMgr() const { return *_restMgr; }
+
+        void SendPlayerChoice(ObjectGuid sender, int32 choiceId);
 
     protected:
         // Gamemaster whisper whitelist
@@ -2643,10 +2641,6 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         uint8 m_MirrorTimerFlags;
         uint8 m_MirrorTimerFlagsLast;
         bool m_isInWater;
-
-        // Rune type / Rune timer
-        uint32 m_runeGraceCooldown[MAX_RUNES];
-        uint32 m_lastRuneGraceTimers[MAX_RUNES];
 
         // Current teleport data
         WorldLocation m_teleport_dest;

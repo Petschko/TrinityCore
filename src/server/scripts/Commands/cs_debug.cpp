@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2017 TrinityCore <http://www.trinitycore.org/>
+ * Copyright (C) 2008-2018 TrinityCore <https://www.trinitycore.org/>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -71,6 +71,7 @@ public:
             { "sellerror",     rbac::RBAC_PERM_COMMAND_DEBUG_SEND_SELLERROR,     false, &HandleDebugSendSellErrorCommand,       "" },
             { "setphaseshift", rbac::RBAC_PERM_COMMAND_DEBUG_SEND_SETPHASESHIFT, false, &HandleDebugSendSetPhaseShiftCommand,   "" },
             { "spellfail",     rbac::RBAC_PERM_COMMAND_DEBUG_SEND_SPELLFAIL,     false, &HandleDebugSendSpellFailCommand,       "" },
+            { "playerchoice",  rbac::RBAC_PERM_COMMAND_DEBUG_SEND_PLAYER_CHOICE, false, &HandleDebugSendPlayerChoiceCommand,    "" },
         };
         static std::vector<ChatCommand> debugCommandTable =
         {
@@ -242,6 +243,18 @@ public:
         castFailed.FailedArg2 = failArg2;
         handler->GetSession()->SendPacket(castFailed.Write());
 
+        return true;
+    }
+
+    static bool HandleDebugSendPlayerChoiceCommand(ChatHandler* handler, char const* args)
+    {
+        if (!*args)
+            return false;
+
+        int32 choiceId = atoi(args);
+        Player* player = handler->GetSession()->GetPlayer();
+
+        player->SendPlayerChoice(player->GetGUID(), choiceId);
         return true;
     }
 
@@ -929,7 +942,7 @@ public:
 
         Map* map = handler->GetSession()->GetPlayer()->GetMap();
 
-        if (!v->Create(map->GenerateLowGuid<HighGuid::Vehicle>(), map, handler->GetSession()->GetPlayer()->GetPhaseMask(), entry, x, y, z, o, nullptr, id))
+        if (!v->Create(map->GenerateLowGuid<HighGuid::Vehicle>(), map, entry, x, y, z, o, nullptr, id))
         {
             delete v;
             return false;
@@ -1457,13 +1470,10 @@ public:
             return false;
         }
 
-        if (target->GetTypeId() == TYPEID_UNIT)
-        {
-            if (target->ToCreature()->GetDBPhase() > 0)
-                handler->PSendSysMessage("Target creature's PhaseId in DB: %d", target->ToCreature()->GetDBPhase());
-            else if (target->ToCreature()->GetDBPhase() < 0)
-                handler->PSendSysMessage("Target creature's PhaseGroup in DB: %d", abs(target->ToCreature()->GetDBPhase()));
-        }
+        if (target->GetDBPhase() > 0)
+            handler->PSendSysMessage("Target creature's PhaseId in DB: %d", target->GetDBPhase());
+        else if (target->GetDBPhase() < 0)
+            handler->PSendSysMessage("Target creature's PhaseGroup in DB: %d", abs(target->GetDBPhase()));
 
         std::stringstream phases;
 
