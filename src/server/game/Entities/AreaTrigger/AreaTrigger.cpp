@@ -28,6 +28,7 @@
 #include "Log.h"
 #include "Object.h"
 #include "ObjectAccessor.h"
+#include "PhasingHandler.h"
 #include "Player.h"
 #include "ScriptMgr.h"
 #include "SpellInfo.h"
@@ -86,7 +87,7 @@ void AreaTrigger::RemoveFromWorld()
     }
 }
 
-bool AreaTrigger::CreateAreaTrigger(uint32 spellMiscId, Unit* caster, Unit* target, SpellInfo const* spell, Position const& pos, int32 duration, uint32 spellXSpellVisualId, ObjectGuid const& castId /*= ObjectGuid::Empty*/, AuraEffect const* aurEff)
+bool AreaTrigger::Create(uint32 spellMiscId, Unit* caster, Unit* target, SpellInfo const* spell, Position const& pos, int32 duration, uint32 spellXSpellVisualId, ObjectGuid const& castId, AuraEffect const* aurEff)
 {
     _targetGuid = target ? target->GetGUID() : ObjectGuid::Empty;
     _aurEff = aurEff;
@@ -127,7 +128,7 @@ bool AreaTrigger::CreateAreaTrigger(uint32 spellMiscId, Unit* caster, Unit* targ
         if (GetMiscTemplate()->ScaleInfo.ExtraScale[scaleCurveIndex].AsInt32)
             SetUInt32Value(AREATRIGGER_EXTRA_SCALE_CURVE + scaleCurveIndex, GetMiscTemplate()->ScaleInfo.ExtraScale[scaleCurveIndex].AsInt32);
 
-    CopyPhaseFrom(caster);
+    PhasingHandler::InheritPhaseShift(this, caster);
 
     if (target && GetTemplate()->HasFlag(AREATRIGGER_FLAG_HAS_ATTACHED))
     {
@@ -170,6 +171,18 @@ bool AreaTrigger::CreateAreaTrigger(uint32 spellMiscId, Unit* caster, Unit* targ
     _ai->OnCreate();
 
     return true;
+}
+
+AreaTrigger* AreaTrigger::CreateAreaTrigger(uint32 spellMiscId, Unit* caster, Unit* target, SpellInfo const* spell, Position const& pos, int32 duration, uint32 spellXSpellVisualId, ObjectGuid const& castId /*= ObjectGuid::Empty*/, AuraEffect const* aurEff /*= nullptr*/)
+{
+    AreaTrigger* at = new AreaTrigger();
+    if (!at->Create(spellMiscId, caster, target, spell, pos, duration, spellXSpellVisualId, castId, aurEff))
+    {
+        delete at;
+        return nullptr;
+    }
+
+    return at;
 }
 
 void AreaTrigger::Update(uint32 diff)

@@ -155,7 +155,7 @@ enum ArtifactPowerFlag : uint8
     ARTIFACT_POWER_FLAG_DONT_COUNT_FIRST_BONUS_RANK = 0x10,
 };
 
-#define BATTLE_PET_SPECIES_MAX_ID 2137
+#define BATTLE_PET_SPECIES_MAX_ID 2164
 
 enum ChrSpecializationFlag
 {
@@ -245,6 +245,7 @@ enum CriteriaAdditionalCondition
     //CRITERIA_ADDITIONAL_CONDITION_UNK86                         = 86, // Some external event id
     //CRITERIA_ADDITIONAL_CONDITION_UNK87                         = 87, // Achievement id
     CRITERIA_ADDITIONAL_CONDITION_BATTLE_PET_SPECIES            = 91,
+    CRITERIA_ADDITIONAL_CONDITION_EXPANSION                     = 92,
     CRITERIA_ADDITIONAL_CONDITION_GARRISON_FOLLOWER_ENTRY       = 144,
     CRITERIA_ADDITIONAL_CONDITION_GARRISON_FOLLOWER_QUALITY     = 145,
     CRITERIA_ADDITIONAL_CONDITION_GARRISON_FOLLOWER_LEVEL       = 146,
@@ -493,7 +494,7 @@ enum CriteriaTypes : uint8
     CRITERIA_TYPE_RELIC_TALENT_UNLOCKED                 = 211
 };
 
-#define CRITERIA_TYPE_TOTAL 212
+#define CRITERIA_TYPE_TOTAL 213
 
 enum CriteriaTreeFlags : uint16
 {
@@ -729,7 +730,8 @@ enum ItemBonusType
     ITEM_BONUS_ITEM_LEVEL_CAN_INCREASE      = 14,                 // Displays a + next to item level indicating it can warforge
     ITEM_BONUS_RANDOM_ENCHANTMENT           = 15,                 // Responsible for showing "<Random additional stats>" or "+%d Rank Random Minor Trait" in the tooltip before item is obtained
     ITEM_BONUS_BONDING                      = 16,
-    ITEM_BONUS_RELIC_TYPE                   = 17
+    ITEM_BONUS_RELIC_TYPE                   = 17,
+    ITEM_BONUS_OVERRIDE_REQUIRED_LEVEL      = 18
 };
 
 enum ItemLimitCategoryMode
@@ -812,6 +814,23 @@ enum MountFlags
     MOUNT_FLAG_HIDE_IF_UNKNOWN          = 0x40
 };
 
+enum PhaseEntryFlags : uint16
+{
+    PHASE_FLAG_NORMAL   = 0x08,
+    PHASE_FLAG_COSMETIC = 0x10,
+    PHASE_FLAG_PERSONAL = 0x20
+};
+
+// PhaseUseFlags fields in different db2s
+enum PhaseUseFlagsValues : uint8
+{
+    PHASE_USE_FLAGS_NONE            = 0x0,
+    PHASE_USE_FLAGS_ALWAYS_VISIBLE  = 0x1,
+    PHASE_USE_FLAGS_INVERSE         = 0x2,
+
+    PHASE_USE_FLAGS_ALL             = PHASE_USE_FLAGS_ALWAYS_VISIBLE | PHASE_USE_FLAGS_INVERSE
+};
+
 enum PrestigeLevelInfoFlags : uint8
 {
     PRESTIGE_FLAG_DISABLED  = 0x01                      // Prestige levels with this flag won't be included to calculate max prestigelevel.
@@ -887,7 +906,7 @@ enum SpellShapeshiftFormFlags
     SHAPESHIFT_FORM_PREVENT_EMOTE_SOUNDS        = 0x1000
 };
 
-#define TaxiMaskSize 253
+#define TaxiMaskSize 258
 typedef std::array<uint8, TaxiMaskSize> TaxiMask;
 
 enum TotemCategoryType
@@ -959,6 +978,8 @@ enum SummonPropFlags
 
 #define MAX_TALENT_TIERS 7
 #define MAX_TALENT_COLUMNS 3
+#define MAX_PVP_TALENT_TIERS 6
+#define MAX_PVP_TALENT_COLUMNS 3
 
 enum TaxiNodeFlags
 {
